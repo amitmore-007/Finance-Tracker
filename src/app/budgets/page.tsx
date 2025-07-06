@@ -20,18 +20,12 @@ import {
   Zap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface Budget {
-  _id?: string;
+  _id: string;
   category: string;
   amount: number;
-  spent: number; // Changed from spent?: number if necessary
+  spent: number;
   period: "monthly" | "weekly" | "yearly";
   month: number;
   year: number;
@@ -46,83 +40,38 @@ export default function BudgetsPage() {
 
   useEffect(() => {
     setMounted(true);
-    fetchBudgets();
+    // Simulate loading for better UX
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   }, []);
 
-  const fetchBudgets = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/budgets");
-      const data = await response.json();
-      setBudgets(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error fetching budgets:", error);
-      setBudgets([]);
-    } finally {
-      setLoading(false);
-    }
+  const handleAddBudget = (budgetData: Omit<Budget, "_id">) => {
+    const newBudget: Budget = {
+      ...budgetData,
+      _id: Date.now().toString(),
+      spent: Math.random() * budgetData.amount * 0.8, // Random spent amount for demo
+    };
+    setBudgets((prev) => [...prev, newBudget]);
+    setShowForm(false);
   };
 
-// In your BudgetsPage component, update the handleAddBudget function definition:
-const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
-  try {
-    const response = await fetch("/api/budgets", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(budget),
-    });
-
-    if (response.ok) {
-      await fetchBudgets();
-      setShowForm(false);
-    } else {
-      const error = await response.json();
-      alert(error.error || "Failed to create budget");
-    }
-  } catch (error) {
-    console.error("Error adding budget:", error);
-    alert("Failed to create budget");
-  }
-};
-
-
-  const handleEditBudget = async (budgetData: Omit<Budget, "_id">) => {
+  const handleEditBudget = (budgetData: Omit<Budget, "_id">) => {
     if (!editingBudget?._id) return;
 
-    try {
-      const response = await fetch(`/api/budgets/${editingBudget._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: budgetData.amount }),
-      });
-
-      if (response.ok) {
-        await fetchBudgets();
-        setEditingBudget(null);
-      }
-    } catch (error) {
-      console.error("Error updating budget:", error);
-    }
+    setBudgets((prev) =>
+      prev.map((budget) =>
+        budget._id === editingBudget._id
+          ? { ...budget, amount: budgetData.amount }
+          : budget
+      )
+    );
+    setEditingBudget(null);
   };
 
-  const handleDeleteBudget = async (id: string) => {
+  const handleDeleteBudget = (id: string) => {
     if (!confirm("Are you sure you want to delete this budget?")) return;
-
-    try {
-      const response = await fetch(`/api/budgets/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await fetchBudgets();
-      }
-    } catch (error) {
-      console.error("Error deleting budget:", error);
-    }
+    setBudgets((prev) => prev.filter((budget) => budget._id !== id));
   };
 
   if (!mounted) return null;
@@ -163,9 +112,8 @@ const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
             style={{
               fontSize: "20px",
               fontWeight: "700",
-              color: "white",
+              color: "#667eea",
               textAlign: "center",
-              textShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
             }}
           >
             Loading your budgets...
@@ -317,42 +265,30 @@ const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
             </div>
 
             {/* Enhanced Create Button */}
-            <Dialog open={showForm} onOpenChange={setShowForm}>
-              <DialogTrigger asChild>
-                <motion.button
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    border: "none",
-                    borderRadius: "20px",
-                    padding: "20px 32px",
-                    color: "white",
-                    fontSize: "16px",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  <Plus size={20} />
-                  Create Budget
-                </motion.button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle style={{ display: "none" }}>
-                  Create Budget
-                </DialogTitle>
-                <BudgetForm
-                  onSubmit={handleAddBudget}
-                  onCancel={() => setShowForm(false)}
-                  existingCategories={existingCategories}
-                />
-              </DialogContent>
-            </Dialog>
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setShowForm(true)}
+              style={{
+                background:
+                  "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                border: "none",
+                borderRadius: "20px",
+                padding: "20px 32px",
+                color: "white",
+                fontSize: "16px",
+                fontWeight: "700",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                transition: "all 0.3s ease",
+                boxShadow: "0 15px 35px rgba(102, 126, 234, 0.4)",
+              }}
+            >
+              <Plus size={20} />
+              Create Budget
+            </motion.button>
           </div>
 
           {/* Cards Overview Section */}
@@ -534,50 +470,28 @@ const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
                 <p style={{ margin: "0 0 32px 0", fontSize: "16px" }}>
                   Start your financial journey by creating your first budget
                 </p>
-                <Dialog open={showForm} onOpenChange={setShowForm}>
-  <DialogTrigger asChild>
-    <button
-      onClick={() => setShowForm(true)}
-      style={{
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        border: "none",
-        borderRadius: "16px",
-        padding: "16px 32px",
-        color: "white",
-        fontSize: "16px",
-        fontWeight: "700",
-        cursor: "pointer",
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "12px",
-        boxShadow: "0 12px 30px rgba(102, 126, 234, 0.4)",
-      }}
-    >
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.98 }}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-        }}
-      >
-        <Plus size={20} />
-        Create Your First Budget
-                     </motion.div>
-    </button>
-  </DialogTrigger>
-  <DialogContent>
-    <DialogTitle style={{ display: "none" }}>
-      Create Your First Budget
-    </DialogTitle>
-    <BudgetForm
-      onSubmit={handleAddBudget}
-      onCancel={() => setShowForm(false)}
-      existingCategories={existingCategories}
-    />
-  </DialogContent>
-</Dialog>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowForm(true)}
+                  style={{
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    border: "none",
+                    borderRadius: "16px",
+                    padding: "16px 32px",
+                    color: "white",
+                    fontSize: "16px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    boxShadow: "0 12px 30px rgba(102, 126, 234, 0.4)",
+                  }}
+                >
+                  <Plus size={20} />
+                  Create Your First Budget
+                </motion.button>
               </motion.div>
             ) : (
               <div
@@ -798,89 +712,49 @@ const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
 
                           {/* Action buttons */}
                           <div style={{ display: "flex", gap: "12px" }}>
-                            <Dialog
-                              open={editingBudget?._id === budget._id}
-                              onOpenChange={(open) => {
-                                if (!open) setEditingBudget(null);
-                              }}
-                            >
-                              <DialogTrigger asChild>
-                                <button
-                                  onClick={() => setEditingBudget(budget)}
-                                  style={{
-                                    background: "none",
-                                    border: "none",
-                                    padding: 0,
-                                    margin: 0,
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  <motion.div
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    style={{
-                                      background:
-                                        "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-                                      border: "none",
-                                      borderRadius: "12px",
-                                      padding: "12px",
-                                      color: "white",
-                                      boxShadow:
-                                        "0 8px 20px rgba(59, 130, 246, 0.3)",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                    }}
-                                  >
-                                    <Edit size={18} />
-                                  </motion.div>
-                                </button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogTitle style={{ display: "none" }}>
-                                  Edit Budget
-                                </DialogTitle>
-                                <BudgetForm
-                                  onSubmit={handleEditBudget}
-                                  onCancel={() => setEditingBudget(null)}
-                                  initialData={editingBudget || undefined}
-                                  existingCategories={existingCategories}
-                                />
-                              </DialogContent>
-                            </Dialog>
-
-                            <button
-                              onClick={() => {
-                                if (budget._id) handleDeleteBudget(budget._id);
-                              }}
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => setEditingBudget(budget)}
                               style={{
-                                background: "none",
+                                background:
+                                  "linear-gradient(135deg, #3b82f6, #1d4ed8)",
                                 border: "none",
-                                padding: 0,
-                                margin: 0,
+                                borderRadius: "12px",
+                                padding: "12px",
+                                color: "white",
+                                boxShadow:
+                                  "0 8px 20px rgba(59, 130, 246, 0.3)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
                                 cursor: "pointer",
                               }}
                             >
-                              <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                style={{
-                                  background:
-                                    "linear-gradient(135deg, #ef4444, #dc2626)",
-                                  border: "none",
-                                  borderRadius: "12px",
-                                  padding: "12px",
-                                  color: "white",
-                                  boxShadow:
-                                    "0 8px 20px rgba(239, 68, 68, 0.3)",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                <Trash2 size={18} />
-                              </motion.div>
-                            </button>
+                              <Edit size={18} />
+                            </motion.button>
+
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleDeleteBudget(budget._id)}
+                              style={{
+                                background:
+                                  "linear-gradient(135deg, #ef4444, #dc2626)",
+                                border: "none",
+                                borderRadius: "12px",
+                                padding: "12px",
+                                color: "white",
+                                boxShadow:
+                                  "0 8px 20px rgba(239, 68, 68, 0.3)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <Trash2 size={18} />
+                            </motion.button>
                           </div>
                         </div>
 
@@ -1061,7 +935,6 @@ const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
                               padding: "16px",
                               borderRadius: "16px",
                               border: "2px solid rgba(102, 126, 234, 0.2)",
-                              gridColumn: "span 2",
                             }}
                           >
                             <div
@@ -1075,6 +948,133 @@ const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
                                 gap: "4px",
                               }}
                             >
+                              <DollarSign size={12} />
+                              Remaining
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "18px",
+                                fontWeight: "800",
+                                color:
+                                  budget.amount - budget.spent >= 0
+                                    ? "#4f46e5"
+                                    : "#dc2626",
+                              }}
+                            >
+                              {formatCurrency(budget.amount - budget.spent)}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Budget Form Modal */}
+        <AnimatePresence>
+          {(showForm || editingBudget) && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "rgba(0, 0, 0, 0.5)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+                padding: "20px",
+              }}
+              onClick={() => {
+                setShowForm(false);
+                setEditingBudget(null);
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: "white",
+                  borderRadius: "24px",
+                  padding: "0",
+                  maxWidth: "500px",
+                  width: "100%",
+                  maxHeight: "90vh",
+                  overflow: "auto",
+                  boxShadow: "0 25px 50px rgba(0, 0, 0, 0.3)",
+                }}
+              >
+                <BudgetForm
+                  onSubmit={editingBudget ? handleEditBudget : handleAddBudget}
+                  onCancel={() => {
+                    setShowForm(false);
+                    setEditingBudget(null);
+                  }}
+                  initialData={editingBudget || undefined}
+                  existingCategories={existingCategories}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <style jsx>{`
+        @keyframes rotate {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          33% {
+            transform: translateY(-10px) rotate(1deg);
+          }
+          66% {
+            transform: translateY(5px) rotate(-1deg);
+          }
+        }
+
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.7;
+          }
+        }
+      `}</style>
+    </Layout>
+  );
+}
                               <DollarSign size={12} />
                               Remaining
                             </div>
