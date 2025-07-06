@@ -471,9 +471,10 @@ export default function BudgetsPage() {
                   Start your financial journey by creating your first budget
                 </p>
                 <motion.button
+                  as="button"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowForm(true)}
+                  onTap={() => setShowForm(true)}
                   style={{
                     background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     border: "none",
@@ -1075,75 +1076,4 @@ export default function BudgetsPage() {
     </Layout>
   );
 }
-                              <DollarSign size={12} />
-                              Remaining
-                            </div>
-                            <div
-                              style={{
-                                fontSize: "18px",
-                                fontWeight: "800",
-                                color:
-                                  budget.amount - budget.spent >= 0
-                                    ? "#4f46e5"
-                                    : "#dc2626",
-                              }}
-                            >
-                              {formatCurrency(budget.amount - budget.spent)}
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </AnimatePresence>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      </div>
-
-      <style jsx>{`
-        @keyframes rotate {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes shimmer {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
-        }
-
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) rotate(0deg);
-          }
-          33% {
-            transform: translateY(-10px) rotate(1deg);
-          }
-          66% {
-            transform: translateY(5px) rotate(-1deg);
-          }
-        }
-
-        @keyframes pulse {
-          0%,
-          100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.7;
-          }
-        }
-      `}</style>
-    </Layout>
-  );
-}
+                             
