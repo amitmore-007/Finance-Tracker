@@ -36,7 +36,7 @@ export default function TransactionsPage() {
 
   useEffect(() => {
     filterAndSortTransactions();
-  }, [transactions, searchTerm, filterType, sortBy, sortOrder]);
+  }, );
 
   const fetchTransactions = async () => {
     try {
