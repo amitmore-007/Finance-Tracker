@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils';
 import { Transaction } from '@/types';
@@ -44,26 +44,7 @@ export default function AnalyticsPage() {
     fetchTransactions();
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (transactions.length > 0) {
-      calculateAnalytics();
-    }
-  }, [transactions, timeFilter]);
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await fetch('/api/transactions');
-      const data = await response.json();
-      setTransactions(data);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const calculateAnalytics = () => {
+  const calculateAnalytics = useCallback(() => {
     // Filter transactions based on timeFilter
     const now = new Date();
     const filterDate = new Date();
@@ -141,11 +122,27 @@ export default function AnalyticsPage() {
     }).filter(cat => cat.amount > 0).sort((a, b) => b.amount - a.amount);
 
     setCategoryAnalysis(categoryAnalysisData);
+  }, [transactions, timeFilter]);
+
+  useEffect(() => {
+    if (transactions.length > 0) {
+      calculateAnalytics();
+    }
+  }, [transactions, timeFilter, calculateAnalytics]);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch('/api/transactions');
+      const data = await response.json();
+      setTransactions(data);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
  
-
-
 
   if (loading) {
     return (

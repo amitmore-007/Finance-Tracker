@@ -15,13 +15,13 @@ export async function PUT(
   try {
     await client.connect();
     const db = client.db('finance-tracker');
-    const updates = await request.json();
+    const budget = await request.json();
     
     const result = await db.collection('budgets').updateOne(
       { _id: new ObjectId(params.id) },
       { 
-        $set: { 
-          ...updates,
+        $set: {
+          ...budget,
           updatedAt: new Date().toISOString()
         }
       }

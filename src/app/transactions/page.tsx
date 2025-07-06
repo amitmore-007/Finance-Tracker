@@ -34,7 +34,6 @@ export default function TransactionsPage() {
     fetchTransactions();
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     filterAndSortTransactions();
   }, [transactions, searchTerm, filterType, sortBy, sortOrder]);
@@ -741,4 +740,5 @@ export default function TransactionsPage() {
       `}</style>
     </Layout>
   );
+}
 }
