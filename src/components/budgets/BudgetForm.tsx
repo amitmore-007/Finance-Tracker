@@ -1,18 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Budget } from '@/types';
 import { CATEGORIES } from '@/lib/categories';
 import { motion } from 'framer-motion';
-
-interface Budget {
-  _id?: string;
-  category: string;
-  amount: number;
-  spent: number;
-  period: 'monthly' | 'weekly' | 'yearly';
-  month: number;
-  year: number;
-}
 
 interface BudgetFormProps {
   onSubmit: (budget: Omit<Budget, '_id'>) => void;
@@ -131,7 +122,7 @@ export function BudgetForm({ onSubmit, initialData, onCancel, existingCategories
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           backgroundClip: 'text',
           WebkitBackgroundClip: 'text',
-          color: 'transparent'
+          
         }}>
           {initialData ? 'Edit Budget' : 'Create Budget'}
         </h2>

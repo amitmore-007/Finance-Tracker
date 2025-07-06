@@ -175,7 +175,7 @@ export default function Dashboard() {
                 gap: '8px'
               }}>
                 <Calendar size={20} />
-                Welcome back! Here's your financial overview
+                Welcome back! Here&apos;s your financial overview
               </p>
             </div>
             <div style={{

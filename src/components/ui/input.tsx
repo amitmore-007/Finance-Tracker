@@ -2,7 +2,7 @@ import * as React from "react";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  // Add any additional props specific to your input component here
+  variant?: "default" | "outline";
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

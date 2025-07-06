@@ -4,14 +4,12 @@ import { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { formatCurrency } from '@/lib/utils';
 import { Transaction } from '@/types';
-import { getCategoryById, CATEGORIES } from '@/lib/categories';
+import { CATEGORIES } from '@/lib/categories';
 import { 
   TrendingUp, 
   TrendingDown, 
   PieChart, 
   BarChart3,
-  Calendar,
-  Filter,
   DollarSign,
   Target,
   Zap,
@@ -144,23 +142,9 @@ export default function AnalyticsPage() {
     setCategoryAnalysis(categoryAnalysisData);
   };
 
-  // Weekly spending pattern
-  const weeklyPattern = Array.from({ length: 7 }, (_, i) => {
-    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][i];
-    const dayTransactions = transactions.filter(t => 
-      new Date(t.date).getDay() === i && t.type === 'expense'
-    );
-    const total = dayTransactions.reduce((sum, t) => sum + t.amount, 0);
-    
-    return { day: dayName, amount: total };
-  });
+ 
 
-  // Calculate insights
-  const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-  const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-  const avgMonthlyExpenses = monthlyData.length > 0 ? totalExpenses / monthlyData.length : 0;
-  const topCategory = categoryAnalysis[0];
-  const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
+
 
   if (loading) {
     return (
