@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-
-// Fix the typing here
-type Params = {
-  params: { id: string };
-};
-
-export async function PUT(request: NextRequest, context: Params) {
-  const { id } = context.params;
+// Correct typing for the context parameter
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
 
   try {
     const client = await clientPromise;
@@ -43,8 +41,11 @@ export async function PUT(request: NextRequest, context: Params) {
   }
 }
 
-export async function DELETE(request: NextRequest, context: Params) {
-  const { id } = context.params;
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
 
   try {
     const client = await clientPromise;
