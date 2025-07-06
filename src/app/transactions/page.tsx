@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { SuccessModal } from '@/components/ui/SuccessModal';
 import { TransactionForm } from '@/components/transactions/TransactionForm';
@@ -50,7 +50,7 @@ export default function TransactionsPage() {
     }
   };
 
-  const filterAndSortTransactions = () => {
+  const filterAndSortTransactions = useCallback(() => {
     let filtered = transactions;
 
     // Filter by search term
@@ -85,7 +85,7 @@ export default function TransactionsPage() {
     });
 
     setFilteredTransactions(filtered);
-  };
+  }, [transactions, searchTerm, filterType, sortBy, sortOrder]);
 
   const handleAddTransaction = async (transactionData: Omit<Transaction, '_id'>) => {
     try {
@@ -372,7 +372,7 @@ export default function TransactionsPage() {
               {['all', 'income', 'expense'].map((type) => (
                 <button
                   key={type}
-                  onClick={() => setFilterType(type as any)}
+                  onClick={() => setFilterType(type as 'all' | 'income' | 'expense')}
                   style={{
                     padding: '12px 20px',
                     border: '2px solid',

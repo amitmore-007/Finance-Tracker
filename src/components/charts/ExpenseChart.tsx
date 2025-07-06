@@ -10,7 +10,19 @@ interface ExpenseChartProps {
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0'];
 
 export function ExpenseChart({ data }: ExpenseChartProps) {
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+  interface CustomizedLabelProps {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+    index: number;
+  }
+
+  const renderCustomizedLabel = ({
+    cx, cy, midAngle, innerRadius, outerRadius, percent
+  }: CustomizedLabelProps) => {
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -23,8 +35,8 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
         fill="white" 
         textAnchor={x > cx ? 'start' : 'end'} 
         dominantBaseline="central"
-        fontSize={12}
-        fontWeight="bold"
+        fontSize="12"
+        fontWeight="600"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>

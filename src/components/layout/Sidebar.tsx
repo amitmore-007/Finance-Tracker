@@ -11,10 +11,7 @@ import {
   TrendingUp,
   Menu,
   X,
-  Wallet,
-  Settings,
-  HelpCircle,
-  Sparkles
+  Wallet
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -554,6 +551,9 @@ export function Sidebar() {
           50% { opacity: 0.5; transform: scale(1.1); }
         }
       `}</style>
+    </>
+  );
+}
     </>
   );
 }
