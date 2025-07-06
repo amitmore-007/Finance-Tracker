@@ -44,6 +44,7 @@ export default function AnalyticsPage() {
     fetchTransactions();
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (transactions.length > 0) {
       calculateAnalytics();

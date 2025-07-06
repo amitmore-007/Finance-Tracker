@@ -87,13 +87,7 @@ const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
   }
 };
 
-// And update the BudgetForm props interface to match:
-interface BudgetFormProps {
-  onSubmit: (budget: Omit<Budget, "_id">) => void;
-  onCancel: () => void;
-  initialData?: Omit<Budget, "_id">;
-  existingCategories: string[];
-}
+
   const handleEditBudget = async (budgetData: Omit<Budget, "_id">) => {
     if (!editingBudget?._id) return;
 
