@@ -31,7 +31,7 @@ interface Budget {
   _id?: string;
   category: string;
   amount: number;
-  spent: number;
+  spent: number; // Changed from spent?: number if necessary
   period: "monthly" | "weekly" | "yearly";
   month: number;
   year: number;
@@ -63,29 +63,37 @@ export default function BudgetsPage() {
     }
   };
 
-  const handleAddBudget = async (budgetData: Omit<Budget, "_id">) => {
-    try {
-      const response = await fetch("/api/budgets", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(budgetData),
-      });
+// In your BudgetsPage component, update the handleAddBudget function definition:
+const handleAddBudget = async (budget: Omit<Budget, "_id">) => {
+  try {
+    const response = await fetch("/api/budgets", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(budget),
+    });
 
-      if (response.ok) {
-        await fetchBudgets();
-        setShowForm(false);
-      } else {
-        const error = await response.json();
-        alert(error.error || "Failed to create budget");
-      }
-    } catch (error) {
-      console.error("Error adding budget:", error);
-      alert("Failed to create budget");
+    if (response.ok) {
+      await fetchBudgets();
+      setShowForm(false);
+    } else {
+      const error = await response.json();
+      alert(error.error || "Failed to create budget");
     }
-  };
+  } catch (error) {
+    console.error("Error adding budget:", error);
+    alert("Failed to create budget");
+  }
+};
 
+// And update the BudgetForm props interface to match:
+interface BudgetFormProps {
+  onSubmit: (budget: Omit<Budget, "_id">) => void;
+  onCancel: () => void;
+  initialData?: Omit<Budget, "_id">;
+  existingCategories: string[];
+}
   const handleEditBudget = async (budgetData: Omit<Budget, "_id">) => {
     if (!editingBudget?._id) return;
 
