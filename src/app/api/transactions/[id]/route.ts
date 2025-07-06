@@ -2,16 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-// Proper typing for dynamic route parameters
-interface DynamicParams {
-  params: {
-    id: string;
-  };
-}
-
+// Correct typing for Next.js App Router dynamic routes
 export async function PUT(
   request: NextRequest,
-  { params }: DynamicParams
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   const { id } = params;
 
@@ -49,7 +43,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: DynamicParams
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   const { id } = params;
 
