@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
 // PUT /api/transactions/[id]
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Params
 ): Promise<NextResponse> {
   const { id } = params;
 
@@ -44,7 +50,7 @@ export async function PUT(
 // DELETE /api/transactions/[id]
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Params
 ): Promise<NextResponse> {
   const { id } = params;
 
